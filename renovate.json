@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "config:base",
+    ":preserveSemverRanges",
+    ":semanticCommits"
+  ],
+  "transitiveRemediation": true,
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
+    },
+    {
+      "matchDatasources": ["npm"],
+      "stabilityDays": 3
+    }
+  ]
+}
