@@ -2,6 +2,7 @@
 
 type Route = ReadonlyArray<ReadonlyArray<number>>;
 type gossipKnowledge = Set<number>;
+const minInADay = 480;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // export function main(input: string): number | "never" {
@@ -23,9 +24,15 @@ export function allBusDriversHaveGossiped(gossips: gossipKnowledge[], numberOfDr
 }
 
 export function getCurrentStop(minute:number,routes:Route):number[] {
-  return []
+  return routes.map(x=>x[minute%x.length]);
+}
+
+export function getDriversAtSameStop(currentStops:number[],driverIndex:number):number[]{
+  const atStop = currentStops[driverIndex];
+  return currentStops.map((pos,indx) => (pos === atStop ? indx :-1)).filter(x=>x!=-1);
 }
 
 console.log(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5"));
 console.log(initGossip(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5").length));
 console.log(allBusDriversHaveGossiped([new Set<number>([1,2]),new Set<number>([1,2])],2));
+console.log(getDriversAtSameStop([4,1,1],2));
