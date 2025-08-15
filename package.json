@@ -71,8 +71,9 @@
     "prettier": "3.2.5",
     "semantic-release": "^20.1.1",
     "ts-jest": "29.1.4",
+    "ts-node": "^10.9.2",
     "type-coverage": "2.29.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.9.2"
   },
   "typeCoverage": {
     "atLeast": 100,
@@ -99,13 +100,16 @@
       "**/*.test.ts"
     ],
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "diagnostics": {
-          "exclude": [
-            "!**/*.(spec|test).ts"
-          ]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": {
+            "exclude": [
+              "!**/*.(spec|test).ts"
+            ]
+          }
         }
-      }]
+      ]
     }
   }
 }
