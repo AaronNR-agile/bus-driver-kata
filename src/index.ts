@@ -2,13 +2,17 @@
 
 type Route = ReadonlyArray<ReadonlyArray<number>>;
 type gossipKnowledge = Set<number>;
-// const minInADay = 480;
+const minInADay = 480;
 
-// export function main(input: string): number | "never" {
-//   let busRoutes: Route = createArrayFromString(input);
-
-//   return 1;
-// }
+export function main(input: string): number | "never" {
+  const busRoutes: Route = createArrayFromString(input);
+  const result:number = simulateBusDrivers(busRoutes,0,initGossip(busRoutes.length))
+  if (result == -1){
+    return ("never");
+  } else {
+    return(result);
+  }
+}
 
 export function createArrayFromString(input: string): number[][] {
   return input.split("\n").map((x) => x.split(" ").map((x) => Number(x)));
@@ -31,10 +35,26 @@ export function getDriversAtSameStop(currentStops:number[],driverIndex:number):n
   return currentStops.map((pos,indx) => (pos === atStop ? indx :-1)).filter(x=>x!=-1);
 }
 
-// export function shareGossip(gossips:gossipKnowledge[],)
+export function shareGossip(gossips:gossipKnowledge[],currentStops:number[],):gossipKnowledge[] {
+  return gossips.map((_,driverIndex) => {
+    const driversAtStop:number[] = getDriversAtSameStop(currentStops,driverIndex);
+    return driversAtStop.reduce((accumulator, currentDriverIdx)=> accumulator.add(currentDriverIdx),new Set<number>());
+  });
+}
 
-console.log(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5"));
-console.log(initGossip(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5").length));
-console.log(allBusDriversHaveGossiped([new Set<number>([1,2]),new Set<number>([1,2])],2));
-console.log(getDriversAtSameStop([4,1,1],2));
-console.log(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")));
+export function simulateBusDrivers(busRoutes:Route,minute:number, gossips:gossipKnowledge[]):number {
+  if (minute >= minInADay){
+    return -1;
+  }
+  if (allBusDriversHaveGossiped(gossips,busRoutes.length)){
+    return minute;
+  }
+  return simulateBusDrivers(busRoutes,minute+1, shareGossip(gossips, getCurrentStop(minute,busRoutes)));
+}
+
+// console.log(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5"));
+// console.log(initGossip(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5").length));
+// console.log(allBusDriversHaveGossiped([new Set<number>([1,2]),new Set<number>([1,2])],2));
+// console.log(getDriversAtSameStop(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")),1));
+// console.log(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")));
+console.log(main("3 1 2 3\n3 2 3 1\n4 2 3 4 5"));
