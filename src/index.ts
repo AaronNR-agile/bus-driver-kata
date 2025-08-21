@@ -38,7 +38,8 @@ export function getDriversAtSameStop(currentStops:number[],driverIndex:number):n
 export function shareGossip(gossips:gossipKnowledge[],currentStops:number[],):gossipKnowledge[] {
   return gossips.map((_,driverIndex) => {
     const driversAtStop:number[] = getDriversAtSameStop(currentStops,driverIndex);
-    return driversAtStop.reduce((accumulator, currentDriverIdx)=> accumulator.add(currentDriverIdx),new Set<number>());
+    console.log(driversAtStop);
+    return driversAtStop.reduce((accumulator, currentDriverIdx)=> new Set<number>([...Array.from(accumulator),...(Array.from(gossips[currentDriverIdx]??Array.from([])))]),new Set<number>());
   });
 }
 
@@ -49,6 +50,7 @@ export function simulateBusDrivers(busRoutes:Route,minute:number, gossips:gossip
   if (allBusDriversHaveGossiped(gossips,busRoutes.length)){
     return minute;
   }
+  console.log(shareGossip(gossips, getCurrentStop(minute,busRoutes)));
   return simulateBusDrivers(busRoutes,minute+1, shareGossip(gossips, getCurrentStop(minute,busRoutes)));
 }
 
