@@ -144,11 +144,3 @@ const simulateBusDrivers = (
   );
 };
 
-// TODO: REMOVE BEFORE COMMITING
-// console.log(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5"));
-// console.log(initGossip(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5").length));
-// console.log(allBusDriversHaveGossiped([new Set<number>([1,2]),new Set<number>([1,2])],2));
-// console.log(getDriversAtSameStop(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")),1));
-// console.log(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")));
-console.log(main("10 9 1 5 16 11 20 17 4 3 7 5 6 16 7\n10 9 1 5 16 11 20 17 4 3 7 5 6 16 7\n5 5 19 6 15 11 9 20 2 2 6 19 14 3 13"));
-console.log(main("2 1 2\n5 2 8"));
