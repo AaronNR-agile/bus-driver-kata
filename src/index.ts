@@ -1,8 +1,10 @@
 //import { string } from "fast-check";
 
-type Route = ReadonlyArray<ReadonlyArray<number>>;
-type gossipKnowledge = Set<number>;
-const minInADay = 480;
+type Routes = ReadonlyArray<ReadonlyArray<number>>; // Read Only 2d array of bus routes
+type Stop = number; // Number representing stop
+type GossipKnowledge = Set<number>; // Set containing the individual driver's gossips
+type Driver = number; // Number representing the driver
+const MINS_IN_DAY = 480; // Number of minutes a a bus driver shift 
 
 /**
  * Main function takes in bus routes in the form of a string where each stop is separated by spaces
@@ -13,7 +15,7 @@ const minInADay = 480;
  *            or "never" if they don't share within the minutes in a day.
  */
 const main = (input: string): number | "never" => {
-  const busRoutes: Route = createArrayFromString(input); // Created 2D read only array to store routes for each bus driver
+  const busRoutes: Routes = createArrayFromString(input); // Created 2D read only array to store routes for each bus driver
   const result: number | undefined = simulateBusDrivers(
     busRoutes,
     0,
@@ -41,7 +43,7 @@ const createArrayFromString = (input: string): number[][] => {
  * @param numberOfDrivers - Number of drivers present in the calculation
  * @returns - list of sets which are the initial gossip that each bus driver
  */
-const initGossip = (numberOfDrivers: number): gossipKnowledge[] => {
+const initGossip = (numberOfDrivers: number): GossipKnowledge[] => {
   return Array.from(
     { length: numberOfDrivers },
     (_, index) => new Set<number>([index])
@@ -55,7 +57,7 @@ const initGossip = (numberOfDrivers: number): gossipKnowledge[] => {
  * @returns - true if they have all shared the gossip around, false if they still are yet to share all the gossip
  */
 const allBusDriversHaveGossiped = (
-  gossips: gossipKnowledge[],
+  gossips: GossipKnowledge[],
   numberOfDrivers: number
 ): boolean => {
   return gossips.every((x) => x.size === numberOfDrivers); // Checks if all the sets are the size of n drivers
@@ -67,7 +69,7 @@ const allBusDriversHaveGossiped = (
  * @param routes - 2D array of bus routes
  * @returns - Returns a list of which stop each bus driver is on
  */
-const getCurrentStop = (minute: number, routes: Route): number[] => {
+const getCurrentStops = (minute: number, routes: Routes): Stop[] => {
   return routes.map((x) => x[minute % x.length] ?? -1); // nullish coalesing operator to handle undefined case
   // (which won't happen if the input to the main function is correctly formated)
 };
@@ -79,8 +81,8 @@ const getCurrentStop = (minute: number, routes: Route): number[] => {
  * @returns - A list of numbers which are the indexes of the drivers who are at the same stop
  */
 const getDriversAtSameStop = (
-  currentStops: number[],
-  driverIndex: number
+  currentStops: Stop[],
+  driverIndex: Driver
 ): number[] => {
   const atStop = currentStops[driverIndex];
   return currentStops
@@ -96,11 +98,11 @@ const getDriversAtSameStop = (
  * @returns  - Updated list of gossips at the current stop
  */
 const shareGossip = (
-  gossips: gossipKnowledge[],
-  currentStops: number[]
-): gossipKnowledge[] => {
+  gossips: GossipKnowledge[],
+  currentStops: Stop[]
+): GossipKnowledge[] => {
   return gossips.map((_, driverIndex) => {
-    const driversAtStop: number[] = getDriversAtSameStop(
+    const driversAtStop: Stop[] = getDriversAtSameStop(
       currentStops,
       driverIndex
     );
@@ -125,11 +127,11 @@ const shareGossip = (
  * @returns - result to the simulation whether the bus drivers will eventually all share thier gossips or not
  */
 const simulateBusDrivers = (
-  busRoutes: Route,
+  busRoutes: Routes,
   minute: number,
-  gossips: gossipKnowledge[]
+  gossips: GossipKnowledge[]
 ): number | undefined => {
-  if (minute >= minInADay) {
+  if (minute >= MINS_IN_DAY) {
     return undefined;
   }
   if (allBusDriversHaveGossiped(gossips, busRoutes.length)) {
@@ -138,6 +140,15 @@ const simulateBusDrivers = (
   return simulateBusDrivers(
     busRoutes,
     minute + 1,
-    shareGossip(gossips, getCurrentStop(minute, busRoutes))
+    shareGossip(gossips, getCurrentStops(minute, busRoutes))
   );
 };
+
+// TODO: REMOVE BEFORE COMMITING
+// console.log(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5"));
+// console.log(initGossip(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5").length));
+// console.log(allBusDriversHaveGossiped([new Set<number>([1,2]),new Set<number>([1,2])],2));
+// console.log(getDriversAtSameStop(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")),1));
+// console.log(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")));
+console.log(main("10 9 1 5 16 11 20 17 4 3 7 5 6 16 7\n10 9 1 5 16 11 20 17 4 3 7 5 6 16 7\n5 5 19 6 15 11 9 20 2 2 6 19 14 3 13"));
+console.log(main("2 1 2\n5 2 8"));
