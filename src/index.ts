@@ -1,9 +1,9 @@
 //import { string } from "fast-check";
 
 type Routes = ReadonlyArray<ReadonlyArray<number>>; // Read Only 2d array of bus routes
-type Stop = number; // Number representing stop
+type Stop = {stopNo:number}; // Number representing stop
 type GossipKnowledge = Set<number>; // Set containing the individual driver's gossips
-type Driver = number; // Number representing the driver
+type Driver = {driverNo:number}; // Number representing the driver
 const MINS_IN_DAY = 480; // Number of minutes a a bus driver shift 
 
 /**
@@ -70,7 +70,7 @@ const allBusDriversHaveGossiped = (
  * @returns - Returns a list of which stop each bus driver is on
  */
 const getCurrentStops = (minute: number, routes: Routes): Stop[] => {
-  return routes.map((x) => x[minute % x.length] ?? -1); // nullish coalesing operator to handle undefined case
+  return routes.map((x) => (stopNo:{x[minute % x.length] ?? -1})); // nullish coalesing operator to handle undefined case
   // (which won't happen if the input to the main function is correctly formated)
 };
 
@@ -84,7 +84,7 @@ const getDriversAtSameStop = (
   currentStops: Stop[],
   driverIndex: Driver
 ): number[] => {
-  const atStop = currentStops[driverIndex];
+  const atStop = currentStops[driverIndex.driverNo];
   return currentStops
     .map((stop, index) => (stop === atStop ? index : -1))
     .filter((x) => x != -1);
@@ -110,7 +110,7 @@ const shareGossip = (
       (accumulator, currentDriverIdx) =>
         new Set<number>([
           ...Array.from(accumulator),
-          ...Array.from(gossips[currentDriverIdx] ?? []),
+          ...Array.from(gossips[currentDriverIdx.stopNo] ?? []),
         ]),
       new Set<number>()
     );
@@ -144,3 +144,11 @@ const simulateBusDrivers = (
   );
 };
 
+// TODO: REMOVE BEFORE COMMITING
+// console.log(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5"));
+// console.log(initGossip(createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5").length));
+// console.log(allBusDriversHaveGossiped([new Set<number>([1,2]),new Set<number>([1,2])],2));
+// console.log(getDriversAtSameStop(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")),1));
+// console.log(getCurrentStop(0,createArrayFromString("3 1 2 3\n3 2 3 1\n4 2 3 4 5")));
+console.log(main("10 9 1 5 16 11 20 17 4 3 7 5 6 16 7\n10 9 1 5 16 11 20 17 4 3 7 5 6 16 7\n5 5 19 6 15 11 9 20 2 2 6 19 14 3 13"));
+console.log(main("2 1 2\n5 2 8"));
